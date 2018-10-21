@@ -1,2 +1,3 @@
 release: python manage.py migrate
-web: gunicorn gettingstarted.wsgi --log-file -
+worker: python app.py
+web: gunicorn app.app
