@@ -1,2 +1,1 @@
-release: python manage.py migrate
-web: python manage.py
+web: gunicorn manage.py
