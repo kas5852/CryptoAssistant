@@ -5,16 +5,17 @@ import requests
 import jsonpath
 import json
 import os
-
 from flask import Flask, request, render_template, jsonify
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def whatever():
-	return "Hello World"
+textToSpeechJSONIFIED = 0
 
-@app.route("/stuff", methods=["POST"])
+@app.route("/")
+def whatever():
+    return render_template('index.html')
+
+@app.route("/dialogueflowendpoint", methods=["POST"])
 def mainPage():
     if request.method == 'POST':
         coin = request.json
@@ -35,19 +36,12 @@ def mainPage():
 
         final_url = base_url + current_crypto + "&excludeCategories=" + excluded_crypto
 
-        # print(final_url)
-
         response = requests.get(final_url)
         sentiments = response.json()  # grab json from the API's response
 
         body_list = jsonpath.jsonpath(sentiments, "$.Data.*.body")
-        # print(sentiments)
 
         total_article = len(body_list)
-        # print(total_article)
-
-        # for x in body_list:
-        # print(x)
 
         data = {'documents': []}
         itemdata = []
@@ -63,20 +57,11 @@ def mainPage():
 
         jsonData = json.dumps(data)
 
-        # print(jsonData)
-
         subscription_key = "fe21b6735b534912934e15b70e83a4ee"
         text_analytics_base_url = "https://westcentralus.api.cognitive.microsoft.com/text/analytics/v2.0/"
         sentiment_api_url = text_analytics_base_url + "sentiment"
         keyPhrases_api_url = text_analytics_base_url + "keyPhrases"
-        # print(sentiment_api_url)
 
-        # documents = {'documents' : [
-        #   {'id': '1', 'language': 'en', 'text': 'I HATE you!!! Everyone should leave this subreddit immediately and go to the llamas subreddit.'},
-        #   {'id': '2', 'language': 'en', 'text': 'Alpacas are my fav <3 <3'},
-        #   {'id': '3', 'language': 'en', 'text': 'This is just really boring. Im not sure why I bothered writing this comment.'}]}
-        #
-        # print(documents)
 
         # creating the POST call to the REST API
         headers = {"Ocp-Apim-Subscription-Key": subscription_key}  # our subscription key
@@ -86,8 +71,6 @@ def mainPage():
         # print(sentiments)
         response = requests.post(sentiment_api_url, headers=headers, json=data)  # post the object
         sentiments = response.json()  # grab json from the API's response
-
-        # print(json.dumps(sentiments))
 
         sentiment_list = jsonpath.jsonpath(sentiments, "$.documents.*.score")
 
@@ -110,20 +93,18 @@ def mainPage():
             elif sentiment_val > 0.5:
                 positive_articles += 1
 
-        overall_sentiment = " Negative "
+        overall_sentiment = " Negative"
         if avg > 0.5:
-            overall_sentiment = " Positive "
+            overall_sentiment = " Positive"
 
-        OutputString = "I analyzed " + str(total_article) + " articles." + " I found " + str(
+        OutputString = " I analyzed " + str(total_article) + " articles. " + " I found " + str(
             neutral_articles) + " neutral articles, " + str(positive_articles) + " positive articles, and " + str(
             negative_articles) + " negative articles. The overall sentiment is looking " + overall_sentiment + "."
 
         print(OutputString)
-
-        return jsonify({
-            "textToSpeech": "For " + coin['name'] + OutputString
-        })
-
+        textToSpeechJSONIFIED =  jsonify({"textToSpeech": "For " + coin['name'] + OutputString})
+        render_template('index.html', textToSpeechJSONIFIED = textToSpeechJSONIFIED)
+        return textToSpeechJSONIFIED
 
 if __name__ == '__main__':
     app.run(port=os.environ['PORT'])

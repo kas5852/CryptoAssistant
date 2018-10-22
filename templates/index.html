@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../../../favicon.ico">
+
+    <title>Crypto Assistant</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- Custom styles for this template -->
+    <link href="../static/cover.css" rel="stylesheet">
+  </head>
+
+  <body class="text-center">
+
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand">Crypto App</h3>
+          <nav class="nav nav-masthead justify-content-center">
+            <a class="nav-link active" href="#">Home</a>
+          </nav>
+        </div>
+      </header>
+
+      <main role="main" class="inner cover">
+        <h1 class="cover-heading">Crypto App</h1>
+        <p class="lead">Enter the cryptocurrency that you want to get insights of using sentiment analysis. We intended to use Google Home but didn't finish. For example you would ask "Hey Google, how is Bitcoin doing today?" and Google would reply "For Bitcoin I analyzed 50 articles. I found 42 neutral articles, 3 positive articles, and 5 negative articles. The overall sentiment is looking Negative."<br><br></p>
+        <p class="lead">
+          <form method="POST">
+                <label for="formGroupExampleInput">Crypto Currency:</label>
+                <input type="text" class="form-control" placeholder="Currently only supports Bitcoin, Ethereum and Ripple" id="coinSubmitted">
+
+            <input class="btn btn-success my-3" type="submit" onsubmit="">
+          </form>
+          <span>Processing takes about 2 seconds.</span><br>
+          <h3>Analysis: <br><span id="analysisText"></span></h3>
+        </p>
+      </main>
+
+      <footer class="mastfoot mt-auto">
+        <div class="inner">
+          <p>Made by Shaswat, Karim, Ayush, Dhruv and <a href="https://saraspaudel.com">Saras</a>.</p>
+        </div>
+      </footer>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+
+    <script>
+    $(document).on("submit", function(event){
+      event.preventDefault()
+      var coin = document.getElementById("coinSubmitted").value
+      coinJSON = {'name': coin}
+      
+      var options = {contentType: 'application/json', data: JSON.stringify(coinJSON), method: "POST", url: '/dialogueflowendpoint', dataType: 'json'}
+      $.ajax(options).then(function(data){
+        console.log(data)
+        $('#analysisText').text(data.textToSpeech)
+      })
+    })
+    </script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+  </body>
+</html>
